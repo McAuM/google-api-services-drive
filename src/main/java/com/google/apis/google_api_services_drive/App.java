@@ -167,13 +167,13 @@ public class App
         String everything = sb.toString();        
     	return everything;
     }
-    private static void downloadFile(Drive service, String fileid) throws IOException {
+    private static void downloadFile(Drive service, String fileid, String newPath) throws IOException {
 	 File file = service.files().get(fileid).execute();
     if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
       try {
         HttpResponse resp =service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
         InputStream result = resp.getContent();
-        OutputStream out = new FileOutputStream(file.getTitle());
+        OutputStream out = new FileOutputStream(newPath+"file.getTitle()");
         copyStream(result,out);
       } catch (IOException e) {
         // An error occurred.
