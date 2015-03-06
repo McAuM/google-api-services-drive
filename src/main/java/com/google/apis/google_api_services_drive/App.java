@@ -136,7 +136,8 @@ public class App
 		}
       else if(arg2.equals("download")){		
 			String arg3 = args[2];
-			downloadFile(service,arg3);
+			String arg4 = args[3];
+			downloadFile(service,arg3,arg4);
 		}
       else if(arg2.equals("upload")){		
 			String arg3 = args[2];
