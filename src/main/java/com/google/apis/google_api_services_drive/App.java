@@ -174,7 +174,7 @@ public class App
       try {
         HttpResponse resp =service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
         InputStream result = resp.getContent();
-        OutputStream out = new FileOutputStream(newPath+"file.getTitle()");
+        OutputStream out = new FileOutputStream(newPath+file.getTitle());
         copyStream(result,out);
       } catch (IOException e) {
         // An error occurred.
