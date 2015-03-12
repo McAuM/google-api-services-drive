@@ -41,29 +41,22 @@ import java.util.List;
 
 public class App 
 {	
-	private static String CLIENT_ID1 = "239045167544-7cdofigo9aroldln3340n1bfqjbv0ksi.apps.googleusercontent.com";
-	private static String CLIENT_SECRET1 = "3nj6cTgKqVYovs9cIijfGFhV";
+	//private static String CLIENT_ID1 = "239045167544-7cdofigo9aroldln3340n1bfqjbv0ksi.apps.googleusercontent.com";
+	//private static String CLIENT_SECRET1 = "3nj6cTgKqVYovs9cIijfGFhV";
 	private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
 	private static String Root_Folder = "0AErPfL4CPS6DUk9PVA";	
-	private static String refresh_token ="1/skB6ZW8ppotsHGbOz_kcXVWqZ1MGL2Jxwbv11x5D1jo";
+	//private static String refresh_token ="1/skB6ZW8ppotsHGbOz_kcXVWqZ1MGL2Jxwbv11x5D1jo";
     public static void main( String[] args ) throws IOException, URISyntaxException
     {
     	String arg1 = args[0];
     	String arg2 = args[1];
-    	String ClientID = "";
-    	String ClientSecret = ""; 
-    	String access_token = Readfile("token.gdrive"+arg1).trim();    	
+    	int NoBox = Integer.parseInt(arg1);
+    	String ClientID = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliID.gdrive",NoBox-1).trim();
+    	String ClientSecret = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliSECRET.gdrive",NoBox-1).trim(); 
+    	String access_token = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/token.gdrive"+arg1,NoBox-1 ).trim();
+    	//String refresh_token = Readfile("/home/hadoop/TESAPI/TESTSCRIPT/refreshtoken.gdrive"+arg1).trim();
     	HttpTransport httpTransport = new NetHttpTransport();
 	    JsonFactory jsonFactory = new JacksonFactory();
-	    
-	    if(arg1.equals("1")){
-    		ClientID = CLIENT_ID1;
-    		ClientSecret = CLIENT_SECRET1;
-    	}
-    	else if (arg1.equals("2")){
-    		ClientID = "";
-    		ClientSecret = "";
-    	}
 	    /*GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
 	            httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
 	            .setAccessType("offline")
@@ -167,6 +160,15 @@ public class App
         }
         String everything = sb.toString();        
     	return everything;
+    }
+    private static String Readfilenumber(String ChFile,int linenumber) throws IOException{    	
+    	String content = null;    
+    	FileInputStream fs= new FileInputStream(ChFile);
+    	BufferedReader br = new BufferedReader(new InputStreamReader(fs));
+    	for(int i = 1; i <=linenumber; i++)
+    	  br.readLine();
+    	content = br.readLine();
+    	return content;
     }
     private static void downloadFile(Drive service, String fileid, String newPath) throws IOException {
 	 File file = service.files().get(fileid).execute();
