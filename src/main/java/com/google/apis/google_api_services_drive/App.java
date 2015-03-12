@@ -81,7 +81,7 @@ public class App
         		.setTransport(httpTransport).setClientSecrets(ClientID, ClientSecret).build();
         		credential.setAccessToken(access_token);
         		//credential.setRefreshToken(refresh_token);
-       Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
+       Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName("TPSI").build();
        if(arg2.equals("help")){    	   
     	    	System.out.println("------------------------------------------------------");
     	    	System.out.println("--#######-#####---########-########-##----##-#######--");
