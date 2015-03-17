@@ -50,10 +50,10 @@ public class App
     {
     	String arg1 = args[0];
     	String arg2 = args[1];
-    	int NoBox = Integer.parseInt(arg1);
+    	int NoBox = Integer.parseInt(arg2);
     	String ClientID = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliID.gdrive",NoBox-1).trim();
     	String ClientSecret = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliSECRET.gdrive",NoBox-1).trim(); 
-    	String access_token = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/token.gdrive"+arg1,NoBox-1 ).trim();
+    	String access_token = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/token.gdrive"+arg2,NoBox-1 ).trim();
     	//String refresh_token = Readfile("/home/hadoop/TESAPI/TESTSCRIPT/refreshtoken.gdrive"+arg1).trim();
     	HttpTransport httpTransport = new NetHttpTransport();
 	    JsonFactory jsonFactory = new JacksonFactory();
@@ -103,36 +103,36 @@ public class App
     	    	System.out.println("- download		<id> {Download file with id}");
     	    	System.out.println("- upload		<filename><type> {Upload file with from filename}");    	    	    
       }
-      else if(arg2.equals("account")){
+      else if(arg1.equals("account")){
       		GetUserInfo(service);
       }
-      else if(arg2.equals("space")){
+      else if(arg1.equals("space")){
       		space(service);
       }
-      else if(arg2.equals("spaceper")){
+      else if(arg1.equals("spaceper")){
       		spaceper(service);
       }
-      else if(arg2.equals("listingAll")){
+      else if(arg1.equals("listingAll")){
    	   		printFilesInFolder(service,Root_Folder);
       }
-      else if(arg2.equals("listing")){ 
+      else if(arg1.equals("listing")){ 
       		String arg3 = args[2];
       		printFilesInFolder(service,arg3);
       }
-      else if(arg2.equals("deletefile")){		
+      else if(arg1.equals("deletefile")){		
 			String arg3 = args[2];
 			deleteFile(service,arg3);
 		}
-      else if(arg2.equals("metadata")){		
+      else if(arg1.equals("metadata")){		
 			String arg3 = args[2];
 			printFile(service,arg3);
 		}
-      else if(arg2.equals("download")){		
+      else if(arg1.equals("download")){		
 			String arg3 = args[2];
 			String arg4 = args[3];
 			downloadFile(service,arg3,arg4);
 		}
-      else if(arg2.equals("upload")){		
+      else if(arg1.equals("upload")){		
 			String arg3 = args[2];
 			String arg4 = args[3];			
 			insertFile(service,arg3,"",Root_Folder,arg4,arg3);
@@ -178,6 +178,7 @@ public class App
         InputStream result = resp.getContent();
         OutputStream out = new FileOutputStream(newPath+file.getTitle());
         copyStream(result,out);
+        System.out.println("Download file Completed to "+newPath+file.getTitle());
       } catch (IOException e) {
         // An error occurred.
         e.printStackTrace();           
@@ -234,7 +235,7 @@ public class App
     	    try {
     	      File file = service.files().insert(body, mediaContent).execute();
     	      // Uncomment the following line to print the File ID.
-    	       System.out.println("File ID: " + file.getId());
+    	      System.out.println("Upload file Completed "+filename+" "+ file.getId());    	       
     	      return file;
     	    } catch (IOException e) {
     	      System.out.println("An error occured: " + e);
@@ -243,7 +244,9 @@ public class App
     	  }
     private static void deleteFile(Drive service, String fileId) {
         try {
+          File file = service.files().get(fileId).execute();
           service.files().delete(fileId).execute();
+          System.out.println("Delete Complete: "+ file.getTitle());
         } catch (IOException e) {
           System.out.println("An error occurred: " + e);
         }
