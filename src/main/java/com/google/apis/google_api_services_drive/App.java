@@ -101,7 +101,7 @@ public class App
     	    	System.out.println("- deletefile		<No.account> <id> {Delete file with id}");
     	    	System.out.println("- metadata		<No.account> <id> {Show file information with id}");    	    	
     	    	System.out.println("- download		<No.account> <id> {Download file with id}");
-    	    	System.out.println("- upload		<No.account> <Path> <type> {Upload file with from Path}");    	    	    
+    	    	System.out.println("- upload		<No.account> <Path1> <Path2> {Upload file with from Path1 to Path2}");    	    	    
       }
       else if(arg1.equals("account")){
       		GetUserInfo(service);
@@ -135,7 +135,7 @@ public class App
       else if(arg1.equals("upload")){		
 			String arg3 = args[2];
 			String arg4 = args[3];			
-			insertFile(service,arg3,"",Root_Folder,arg4,arg3);
+			insertFile(service,arg4,"",Root_Folder,"",arg3);
 			
 		}
 		else System.out.println("Commnad Error");
@@ -271,9 +271,9 @@ public class App
         try {
           About about = service.about().get().execute();
           System.out.println("User space");
-          System.out.println("Total = " + about.getQuotaBytesTotal()/1073741824+" Gb");
-          System.out.println("Used = " + about.getQuotaBytesUsed()/1073741824+" Gb"); 
-          System.out.format("free = %d Gb\n",(about.getQuotaBytesTotal()/1073741824)-(about.getQuotaBytesUsed()/1073741824));
+          System.out.println("Total = " + about.getQuotaBytesTotal()/1073741824+" Gb or " + about.getQuotaBytesTotal()/1048576 + " Mb");
+          System.out.println("Used = " + about.getQuotaBytesUsed()/1073741824+" Gb or " + about.getQuotaBytesUsed()/1048576 + " Mb"); 
+          System.out.format("free = %d Gb or %d Mb\n",(about.getQuotaBytesTotal()/1073741824)-(about.getQuotaBytesUsed()/1073741824),(about.getQuotaBytesTotal()/1048576)-(about.getQuotaBytesUsed()/1048576));
         } catch (IOException e) {
           System.out.println("An error occurred: " + e);
         }
