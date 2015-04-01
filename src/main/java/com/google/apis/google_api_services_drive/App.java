@@ -132,6 +132,11 @@ public class App
 			String arg4 = args[3];
 			downloadFile(service,arg3,arg4);
 		}
+      else if(arg1.equals("download2")){		
+			String arg3 = args[2];
+			String arg4 = args[3];
+			downloadFile2(service,arg3,arg4);
+		}
       else if(arg1.equals("upload")){		
 			String arg3 = args[2];
 			String arg4 = args[3];			
@@ -187,6 +192,24 @@ public class App
       // The file doesn't have any content stored on Drive.          
     }
   }
+    private static void downloadFile2(Drive service, String fileid, String newPath) throws IOException {
+   	 File file = service.files().get(fileid).execute();
+       if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0) {
+         try {
+           HttpResponse resp =service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
+           InputStream result = resp.getContent();
+           String fileName = file.getTitle().substring(file.getTitle().lastIndexOf("/")+1);
+           OutputStream out = new FileOutputStream(newPath+fileName);
+           copyStream(result,out);
+           System.out.println("Download file Completed to "+newPath+" "+file.getTitle());
+         } catch (IOException e) {
+           // An error occurred.
+           e.printStackTrace();           
+         }
+       } else {
+         // The file doesn't have any content stored on Drive.          
+       }
+     }
     private static String CheckTypeFile(String type) {
     	String mimeType=null;
     	if(type.equals("xls")) mimeType="application/vnd.ms-excel";
@@ -293,10 +316,12 @@ public class App
 
         try {
           File file = service.files().get(fileId).execute();
-
+          
           System.out.println("Title: " + file.getTitle());
           System.out.println("Description: " + file.getDescription());
           System.out.println("MIME type: " + file.getMimeType());
+          System.out.println("Size: " + file.getFileSize() + " btye");
+          System.out.println("Date: " + file.getCreatedDate());
         } catch (IOException e) {
           System.out.println("An error occured: " + e);
         }
