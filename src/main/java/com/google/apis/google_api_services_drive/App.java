@@ -98,7 +98,7 @@ public class App
     	    	System.out.println("- space			<No.account> {Show space informaion}");
     	    	System.out.println("- spaceper		<No.account> {Show space in percent}");
     	    	System.out.println("- listingAll		<No.account> {Show all file and Directory}");
-    	    	System.out.println("- deletefile		<No.account> <id> {Delete file with id}");
+    	    	System.out.println("- delete		<No.account> <id> {Delete file with id}");
     	    	System.out.println("- metadata		<No.account> <id> {Show file information with id}");    	    	
     	    	System.out.println("- download		<No.account> <id> {Download file with id}");
     	    	System.out.println("- upload		<No.account> <Path1> <Path2> {Upload file with from Path1 to Path2}");    	    	    
@@ -119,7 +119,7 @@ public class App
       		String arg3 = args[2];
       		printFilesInFolder(service,arg3);
       }
-      else if(arg1.equals("deletefile")){		
+      else if(arg1.equals("delete")){		
 			String arg3 = args[2];
 			deleteFile(service,arg3);
 		}
