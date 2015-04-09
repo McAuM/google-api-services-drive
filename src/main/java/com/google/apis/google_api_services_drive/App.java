@@ -1,7 +1,6 @@
 package com.google.apis.google_api_services_drive;
 
-//import com.box.sdk.BoxFolder;
-//import com.box.sdk.BoxUser;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -26,13 +25,16 @@ import com.google.api.services.drive.model.ParentReference;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ public class App
     	int NoBox = Integer.parseInt(arg2);
     	String ClientID = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliID.gdrive",NoBox-1).trim();
     	String ClientSecret = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/cliSECRET.gdrive",NoBox-1).trim(); 
-    	String access_token = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/token.gdrive"+arg2,NoBox-1 ).trim();
+    	String access_token = Readfilenumber("/home/hadoop/TESAPI/TESTSCRIPT/token.gdrive"+arg2,0 ).trim();
     	//String refresh_token = Readfile("/home/hadoop/TESAPI/TESTSCRIPT/refreshtoken.gdrive"+arg1).trim();
     	HttpTransport httpTransport = new NetHttpTransport();
 	    JsonFactory jsonFactory = new JacksonFactory();
@@ -95,6 +97,7 @@ public class App
     	    	System.out.println("Commmand <need> [option] {detail}");
     	    	System.out.println("- help			<No.account> {Show more informaion command}");
     	    	System.out.println("- account		<No.account> {Show account informaion}");
+    	    	System.out.println("- addaccount		<No.account> {Show account informaion}");
     	    	System.out.println("- space			<No.account> {Show space informaion}");
     	    	System.out.println("- spaceper		<No.account> {Show space in percent}");
     	    	System.out.println("- listingAll		<No.account> {Show all file and Directory}");
@@ -143,7 +146,67 @@ public class App
 			insertFile(service,arg4,"",Root_Folder,"",arg3);
 			
 		}
+      else if(arg1.equals("addaccount")){		
+			Addaccount();
+      	}
 		else System.out.println("Commnad Error");
+    }
+    private static void Addaccount() throws IOException{
+    	HttpTransport httpTransport = new NetHttpTransport();
+	    JsonFactory jsonFactory = new JacksonFactory();
+    	System.out.print("Enter the Client ID: ");
+    	String CliID = new BufferedReader(new InputStreamReader(System.in)).readLine();
+    	System.out.print("Enter the Client Secret: ");
+    	String Clisecret = new BufferedReader(new InputStreamReader(System.in)).readLine();
+    	CliID = CliID.trim();
+    	Clisecret = Clisecret.trim();
+	    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+        httpTransport, jsonFactory, CliID, Clisecret, Arrays.asList(DriveScopes.DRIVE))
+        .setAccessType("offline")
+        .setApprovalPrompt("auto").build();	   
+		String url = flow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
+		System.out.println("Following the Instruction");
+    	System.out.println("1. Goto Url :");
+    	System.out.println(url);
+    	System.out.println("2. Enter Username and Password");
+    	System.out.println("3. Click Grant Access Box");
+    	System.out.println("4. Get Authorization code in url");
+    	System.out.print("5. Enter Authorization code: ");					
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String Authorization_code = br.readLine();
+		GoogleTokenResponse response = flow.newTokenRequest(Authorization_code).setRedirectUri(REDIRECT_URI).execute();
+		GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+		    .setJsonFactory(jsonFactory)
+		    .setClientSecrets(CliID, Clisecret)
+		    .build()
+		    .setFromTokenResponse(response);
+		String accessToken = credential.getAccessToken();
+		String refreshToken = credential.getRefreshToken();
+		//System.out.println(accessToken);
+		//System.out.println(refreshToken);
+		
+		BufferedReader read = new BufferedReader(new FileReader("/home/hadoop/TESAPI/TESTSCRIPT/active_GoogleDrive.txt"));
+    	String line = read.readLine();
+    	String[] tmpArray = line.split(" ");
+    	int count = tmpArray.length;
+    	//System.out.println(count);
+    	//count = count +1;
+    	read.close();
+    	
+    	PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("/home/hadoop/TESAPI/TESTSCRIPT/GoogleDrive/cliID.gdrive",true)));
+    	writer.println(CliID);    	
+    	writer.close();
+    	writer = new PrintWriter(new BufferedWriter(new FileWriter("/home/hadoop/TESAPI/TESTSCRIPT/GoogleDrive/cliSECRET.gdrive",true)));
+    	writer.println(Clisecret);    	
+    	writer.close();
+    	writer = new PrintWriter(new BufferedWriter(new FileWriter("/home/hadoop/TESAPI/TESTSCRIPT/GoogleDrive/token.gdrive"+count)));    	
+    	writer.println(accessToken);    	
+    	writer.close();
+    	writer = new PrintWriter(new BufferedWriter(new FileWriter("/home/hadoop/TESAPI/TESTSCRIPT/GoogleDrive/refreshtoken.gdrive"+count)));
+    	writer.println(refreshToken);    	
+    	writer.close();
+    	System.out.println("Complete..");
+		
     }
     public static void copyStream(InputStream input, OutputStream output) throws IOException
 	{
