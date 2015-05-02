@@ -97,20 +97,26 @@ public class App
     	    	System.out.println("Commmand <need> [option] {detail}");
     	    	System.out.println("- help			<No.account> {Show more informaion command}");
     	    	System.out.println("- account		<No.account> {Show account informaion}");
-    	    	System.out.println("- addaccount		<No.account> {Show account informaion}");
+    	    	System.out.println("- addaccount		<No.account> {add account}");
     	    	System.out.println("- space			<No.account> {Show space informaion}");
     	    	System.out.println("- spaceper		<No.account> {Show space in percent}");
     	    	System.out.println("- listingAll		<No.account> {Show all file and Directory}");
     	    	System.out.println("- delete		<No.account> <id> {Delete file with id}");
     	    	System.out.println("- metadata		<No.account> <id> {Show file information with id}");    	    	
-    	    	System.out.println("- download		<No.account> <id> {Download file with id}");
+    	    	System.out.println("- download		<No.account> <id> <Path>{Download file with id to Path}");
     	    	System.out.println("- upload		<No.account> <Path1> <Path2> {Upload file with from Path1 to Path2}");    	    	    
       }
       else if(arg1.equals("account")){
       		GetUserInfo(service);
       }
+     else if(arg1.equals("account2")){
+    		GetUserInfo2(service);
+     }
       else if(arg1.equals("space")){
       		space(service);
+      }
+      else if(arg1.equals("space2")){
+    		space2(service);
       }
       else if(arg1.equals("spaceper")){
       		spaceper(service);
@@ -118,6 +124,9 @@ public class App
       else if(arg1.equals("listingAll")){
    	   		printFilesInFolder(service,Root_Folder);
       }
+      else if(arg1.equals("listingAll2")){
+ 	   		printFilesInFolder2(service,Root_Folder);
+    }
       else if(arg1.equals("listing")){ 
       		String arg3 = args[2];
       		printFilesInFolder(service,arg3);
@@ -353,6 +362,15 @@ public class App
           System.out.println("An error occurred: " + e);
         }
      }
+    private static void GetUserInfo2(Drive service) {
+        try {
+          About about = service.about().get().execute();            
+          System.out.format("User ID = %s\t" , about.getPermissionId());
+          System.out.format("display name = %s\n" , about.getName());                              
+        } catch (IOException e) {
+          System.out.println("An error occurred: " + e);
+        }
+     }
     private static void space(Drive service) {
         try {
           About about = service.about().get().execute();
@@ -360,6 +378,17 @@ public class App
           System.out.println("Total = " + about.getQuotaBytesTotal()/1073741824+" Gb or " + about.getQuotaBytesTotal()/1048576 + " Mb");
           System.out.println("Used = " + about.getQuotaBytesUsed()/1073741824+" Gb or " + about.getQuotaBytesUsed()/1048576 + " Mb"); 
           System.out.format("free = %d Gb or %d Mb\n",(about.getQuotaBytesTotal()/1073741824)-(about.getQuotaBytesUsed()/1073741824),(about.getQuotaBytesTotal()/1048576)-(about.getQuotaBytesUsed()/1048576));
+        } catch (IOException e) {
+          System.out.println("An error occurred: " + e);
+        }
+     }
+    private static void space2(Drive service) {
+        try {
+          About about = service.about().get().execute();
+          System.out.println("User space");          
+          System.out.format("Total = %d Mb\t",about.getQuotaBytesTotal()/1048576);          
+          System.out.format("Used = %d Mb\t",about.getQuotaBytesUsed()/1048576);
+          System.out.format("free = %d Mb\n",(about.getQuotaBytesTotal()/1048576)-(about.getQuotaBytesUsed()/1048576));
         } catch (IOException e) {
           System.out.println("An error occurred: " + e);
         }
@@ -406,5 +435,23 @@ public class App
     	      }
     	    } while (request.getPageToken() != null &&
     	             request.getPageToken().length() > 0);
-    	  }
+    }
+    private static void printFilesInFolder2(Drive service, String folderId)throws IOException {
+	    Children.List request = service.children().list(folderId).setQ("trashed = false");
+	    //service.files().list().setQ("trashed = false").execute();
+	    do {
+	      try {
+	        ChildList children = request.execute();    	        
+	        for (ChildReference child : children.getItems()) {
+	          File file = service.files().get(child.getId()).execute();
+	          System.out.println(file.getTitle());    	        	
+	        }
+	        request.setPageToken(children.getNextPageToken());
+	      } catch (IOException e) {
+	        System.out.println("An error occurred: " + e);
+	        request.setPageToken(null);
+	      }
+	    } while (request.getPageToken() != null &&
+	             request.getPageToken().length() > 0);
+    }
 }
